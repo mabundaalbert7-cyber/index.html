@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UnifiedAPI · Get Your Free Key</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{
+            --bg:#04040f;--surface:rgba(255,255,255,0.04);--surface2:rgba(255,255,255,0.07);
+            --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+            --purple:#8b5cf6;--cyan:#06b6d4;--gold:#f59e0b;
+            --text:#f0eeff;--muted:rgba(240,238,255,0.45);--muted2:rgba(240,238,255,0.25);
+        }
+        html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif}
+        canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+        /* NAV */
+        nav{position:relative;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:20px 40px;border-bottom:1px solid var(--border)}
+        .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;background:linear-gradient(90deg,#c4b5fd,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none}
+        .nav-back{font-size:.8rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:7px 16px;border-radius:100px;transition:all .2s}
+        .nav-back:hover{color:var(--text);border-color:rgba(255,255,255,.15)}
+
+        /* MAIN */
+        .page{position:relative;z-index:1;min-height:calc(100vh - 65px);display:flex;align-items:center;justify-content:center;padding:40px 24px}
+
+        /* CARD */
+        .card{width:100%;max-width:480px;animation:up .5s ease both}
+        @keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+        .card-top{text-align:center;margin-bottom:36px}
+        .key-icon{font-size:3rem;display:block;margin-bottom:16px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(245,158,11,.5))}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        .card-h{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;letter-spacing:-1px;margin-bottom:10px;background:linear-gradient(135deg,#c4b5fd,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .card-p{color:var(--muted);font-size:.9rem;line-height:1.7}
+
+        /* FORM */
+        .form-box{background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:20px;padding:32px;position:relative;overflow:hidden}
+        .form-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,.7),rgba(6,182,212,.4),transparent)}
+
+        .field{margin-bottom:20px}
+        .field-label{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+        .field-label span{color:var(--purple)}
+        .field-inp{
+            width:100%;padding:13px 16px;
+            background:rgba(0,0,0,.5);
+            border:1px solid var(--border);border-radius:12px;
+            color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;
+            outline:none;transition:border-color .2s,box-shadow .2s;
+        }
+        .field-inp:focus{border-color:rgba(139,92,246,.6);box-shadow:0 0 0 3px rgba(139,92,246,.12)}
+        .field-inp::placeholder{color:var(--muted2)}
+        .field-inp.err{border-color:#f87171}
+
+        .field-hint{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--muted2);margin-top:6px}
+
+        .submit-btn{
+            width:100%;padding:15px;margin-top:6px;
+            background:linear-gradient(135deg,#7c3aed,#5b21b6);
+            border:none;border-radius:12px;color:#fff;
+            font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.92rem;
+            cursor:pointer;transition:all .2s;
+            box-shadow:0 8px 24px rgba(124,58,237,.35);
+            display:flex;align-items:center;justify-content:center;gap:8px;
+        }
+        .submit-btn:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(124,58,237,.5)}
+        .submit-btn:active{transform:scale(.98)}
+        .submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+        .err-msg{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:10px;padding:12px 16px;font-family:'DM Mono',monospace;font-size:.75rem;color:#f87171;margin-top:14px;display:none}
+
+        /* SUCCESS STATE */
+        .success-box{display:none;text-align:center}
+        .success-icon{font-size:3rem;margin-bottom:16px;display:block;animation:pop .4s cubic-bezier(.34,1.56,.64,1) both}
+        @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+        .success-h{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;letter-spacing:-0.5px;margin-bottom:8px;color:#34d399}
+        .success-p{color:var(--muted);font-size:.85rem;margin-bottom:24px;line-height:1.6}
+
+        .key-box{
+            background:rgba(0,0,0,.6);border:1px solid rgba(52,211,153,.25);
+            border-radius:12px;padding:16px 20px;margin-bottom:16px;
+            display:flex;align-items:center;gap:12px;
+        }
+        .key-val{font-family:'DM Mono',monospace;font-size:.8rem;color:#34d399;flex:1;word-break:break-all;text-align:left}
+        .copy-btn{
+            background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);
+            border-radius:8px;padding:8px 14px;color:#34d399;
+            font-family:'DM Mono',monospace;font-size:.72rem;cursor:pointer;
+            transition:all .2s;white-space:nowrap;flex-shrink:0;
+        }
+        .copy-btn:hover{background:rgba(52,211,153,.2)}
+        .copy-btn.copied{color:#a7f3d0;border-color:rgba(167,243,208,.3)}
+
+        .key-warning{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:12px 16px;font-size:.78rem;color:rgba(245,158,11,.9);line-height:1.6;margin-bottom:20px;text-align:left}
+        .key-warning strong{display:block;margin-bottom:4px}
+
+        .action-btns{display:flex;gap:10px;flex-wrap:wrap}
+        .action-btn{flex:1;padding:12px;border-radius:11px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;text-decoration:none;text-align:center;transition:all .2s}
+        .action-primary{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;box-shadow:0 6px 20px rgba(124,58,237,.3)}
+        .action-primary:hover{transform:translateY(-1px)}
+        .action-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+        .action-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.15)}
+
+        /* PERKS */
+        .perks{display:flex;gap:10px;margin-top:28px;flex-wrap:wrap}
+        .perk{flex:1;min-width:120px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+        .perk-icon{font-size:1.2rem;margin-bottom:6px;display:block}
+        .perk-t{font-size:.75rem;font-weight:700;margin-bottom:3px}
+        .perk-d{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--muted)}
+
+        .already{text-align:center;margin-top:20px;font-size:.78rem;color:var(--muted2)}
+        .already a{color:#c4b5fd;text-decoration:none;font-weight:600}
+        .already a:hover{text-decoration:underline}
+
+        footer{position:relative;z-index:1;text-align:center;padding:20px;font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted2);border-top:1px solid var(--border)}
+    </style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<nav>
+    <a href="index.html" class="logo">UnifiedAPI</a>
+    <a href="index.html" class="nav-back">← Home</a>
+</nav>
+
+<div class="page">
+    <div class="card">
+        <!-- FORM STATE -->
+        <div id="formState">
+            <div class="card-top">
+                <span class="key-icon">🔑</span>
+                <div class="card-h">Get Your Free Key</div>
+                <p class="card-p">One key. Access to jokes, crypto prices, daily wisdom, and AI — completely free.</p>
+            </div>
+
+            <div class="form-box">
+                <div class="field">
+                    <div class="field-label"><span>//</span> Your Name</div>
+                    <input type="text" class="field-inp" id="userName" placeholder="e.g. Albert Mabunda" maxlength="50">
+                </div>
+                <div class="field">
+                    <div class="field-label"><span>//</span> Email Address</div>
+                    <input type="email" class="field-inp" id="userEmail" placeholder="e.g. albert@example.com">
+                    <div class="field-hint">Your key will be shown on screen. Keep it safe.</div>
+                </div>
+                <button class="submit-btn" id="submitBtn" onclick="register()">
+                    ⚡ Generate My Free API Key
+                </button>
+                <div class="err-msg" id="errMsg"></div>
+            </div>
+
+            <div class="perks">
+                <div class="perk"><span class="perk-icon">🚀</span><div class="perk-t">Instant</div><div class="perk-d">No waiting</div></div>
+                <div class="perk"><span class="perk-icon">🆓</span><div class="perk-t">Free</div><div class="perk-d">No credit card</div></div>
+                <div class="perk"><span class="perk-icon">🔒</span><div class="perk-t">Secure</div><div class="perk-d">Supabase auth</div></div>
+                <div class="perk"><span class="perk-icon">⚡</span><div class="perk-t">4 APIs</div><div class="perk-d">One key</div></div>
+            </div>
+
+            <div class="already">Already have a key? <a href="chat.html">Go to AI Chat →</a></div>
+        </div>
+
+        <!-- SUCCESS STATE -->
+        <div class="success-box" id="successState">
+            <div class="form-box">
+                <span class="success-icon">🎉</span>
+                <div class="success-h">You're in!</div>
+                <p class="success-p">Your API key has been generated and saved. Copy it now — <strong>this is the only time it will be shown.</strong></p>
+
+                <div class="key-box">
+                    <div class="key-val" id="keyVal"></div>
+                    <button class="copy-btn" id="copyBtn" onclick="copyKey()">Copy</button>
+                </div>
+
+                <div class="key-warning">
+                    <strong>⚠ Save this key somewhere safe!</strong>
+                    We don't store it in a way you can retrieve later. If you lose it, you'll need to register again with a different email.
+                </div>
+
+                <div class="action-btns">
+                    <a href="chat.html" class="action-btn action-primary" id="chatLink">🤖 Open AI Chat</a>
+                    <a href="index.html" class="action-btn action-ghost">← Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>© 2026 UnifiedAPI · Built for the next generation of developers.</footer>
+
+<script>
+const API_BASE = 'https://api-keys-5tdu.onrender.com';
+
+async function register(){
+    const name = document.getElementById('userName').value.trim();
+    const email = document.getElementById('userEmail').value.trim();
+    const btn = document.getElementById('submitBtn');
+    const errMsg = document.getElementById('errMsg');
+
+    // Reset errors
+    errMsg.style.display = 'none';
+    document.getElementById('userName').classList.remove('err');
+    document.getElementById('userEmail').classList.remove('err');
+
+    // Validate
+    if(!name || name.length < 2){
+        document.getElementById('userName').classList.add('err');
+        showErr('Please enter your name (at least 2 characters).');
+        return;
+    }
+    if(!email || !email.includes('@')){
+        document.getElementById('userEmail').classList.add('err');
+        showErr('Please enter a valid email address.');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Generating your key…';
+
+    try{
+        const res = await fetch(`${API_BASE}/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_name: name, email: email })
+        });
+
+        const data = await res.json();
+
+        if(res.ok){
+            // Show success
+            document.getElementById('keyVal').textContent = data.api_key;
+            document.getElementById('formState').style.display = 'none';
+            document.getElementById('successState').style.display = 'block';
+
+            // Pre-fill key in chat
+            localStorage.setItem('ua_key', data.api_key);
+        } else {
+            showErr(data.detail || 'Something went wrong. Please try again.');
+            btn.disabled = false;
+            btn.innerHTML = '⚡ Generate My Free API Key';
+        }
+    } catch(e){
+        showErr('Could not reach the server. Please try again in a moment.');
+        btn.disabled = false;
+        btn.innerHTML = '⚡ Generate My Free API Key';
+    }
+}
+
+function showErr(msg){
+    const el = document.getElementById('errMsg');
+    el.textContent = '⚠ ' + msg;
+    el.style.display = 'block';
+}
+
+function copyKey(){
+    const key = document.getElementById('keyVal').textContent;
+    navigator.clipboard.writeText(key).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = '✓ Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+}
+
+// Enter key submits
+document.addEventListener('keydown', e => {
+    if(e.key === 'Enter' && document.getElementById('formState').style.display !== 'none'){
+        register();
+    }
+});
+
+// Particles
+(function(){
+    const c = document.getElementById('bg'), ctx = c.getContext('2d');
+    let W, H, pts = [];
+    function resize(){ W = c.width = innerWidth; H = c.height = innerHeight }
+    resize(); window.addEventListener('resize', resize);
+    class Pt{
+        constructor(){ this.reset() }
+        reset(){
+            this.x=Math.random()*W; this.y=Math.random()*H;
+            this.r=Math.random()*1.3+0.2;
+            this.vx=(Math.random()-.5)*.2; this.vy=(Math.random()-.5)*.2;
+            this.a=Math.random(); this.da=(Math.random()-.5)*.003;
+            const cols=['rgba(139,92,246,','rgba(6,182,212,','rgba(245,158,11,'];
+            this.col=cols[Math.floor(Math.random()*cols.length)];
+        }
+        update(){ this.x+=this.vx; this.y+=this.vy; this.a+=this.da; if(this.a>1||this.a<0)this.da*=-1; if(this.x<0||this.x>W||this.y<0||this.y>H)this.reset() }
+        draw(){ ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fillStyle=this.col+Math.max(0,Math.min(1,this.a))+')'; ctx.fill() }
+    }
+    for(let i=0;i<70;i++) pts.push(new Pt());
+    function loop(){ ctx.clearRect(0,0,W,H); pts.forEach(p=>{p.update();p.draw()}); requestAnimationFrame(loop) }
+    loop();
+})();
+</script>
+</body>
+</html>
